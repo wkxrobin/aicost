@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AI 成本管家：把 DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini 和自定义 API 的余额、费用与连接状态放在一个 Windows 桌面看板里。">
+<meta property="og:title" content="AI 成本管家 v0.2.0">
+<meta property="og:description" content="多 API 余额、费用和异常，一屏看清。Windows 单文件 EXE，无需安装 Python。">
+<meta property="og:image" content="https://wkxrobin.github.io/aicost/assets/dashboard.png">
+<meta property="og:type" content="website">
+<title>AI 成本管家 · 多 API 成本看板</title>
+<link rel="icon" href="assets/icon.ico">
+<style>
+  :root{
+    --canvas:#010102; --surface1:#0f1011; --surface2:#141516; --surface3:#18191a;
+    --ink:#f7f8f8; --muted:#d0d6e0; --subtle:#8a8f98; --tertiary:#62666d;
+    --line:#23252a; --line2:#34343a; --primary:#5e6ad2; --primary2:#828fff;
+    --success:#27a644; --glow:#3ff0c4; --warn:#d6a640;
+    --radius:14px; --mono:"Cascadia Mono","SFMono-Regular",Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--canvas);color:var(--ink);font-family:"Segoe UI","Microsoft YaHei UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:min(1160px,calc(100% - 40px));margin:0 auto}
+  .nav{position:sticky;top:0;z-index:30;background:rgba(1,1,2,.82);backdrop-filter:blur(18px);border-bottom:1px solid rgba(35,37,42,.8)}
+  .nav-inner{height:64px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.02em}
+  .mark{width:32px;height:32px;border-radius:9px;border:1px solid var(--line2);background:linear-gradient(145deg,var(--surface3),var(--surface1));display:grid;place-items:center;box-shadow:0 0 20px rgba(94,106,210,.12)}
+  .mark svg{width:19px;height:19px;stroke:var(--glow)}
+  .navlinks{display:flex;align-items:center;gap:22px;color:var(--subtle);font-size:13px}
+  .navlinks a:hover{color:var(--ink)}
+  .mini-btn{border:1px solid var(--line2);background:var(--surface1);color:var(--ink);padding:8px 13px;border-radius:8px;font-size:13px;cursor:pointer}
+  .mini-btn:hover{border-color:var(--primary2)}
+  .hero{position:relative;padding:88px 0 70px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(700px 430px at 50% 0%,rgba(94,106,210,.20),transparent 68%),linear-gradient(rgba(63,240,196,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(63,240,196,.025) 1px,transparent 1px);background-size:auto,32px 32px,32px 32px;mask-image:linear-gradient(to bottom,#000 45%,transparent 96%);pointer-events:none}
+  .hero-inner{position:relative;text-align:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(94,106,210,.38);background:rgba(94,106,210,.08);color:#cbd0ff;border-radius:999px;padding:5px 11px;font-size:11px;font-weight:700;letter-spacing:.03em}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--glow);box-shadow:0 0 10px var(--glow)}
+  h1{font-size:clamp(42px,7.6vw,80px);line-height:1.02;letter-spacing:-.055em;font-weight:700;margin:22px auto 16px;max-width:900px}
+  .grad{background:linear-gradient(105deg,#fff 12%,#cbd0ff 48%,#74f6d3 88%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lead{max-width:720px;margin:0 auto;color:var(--subtle);font-size:clamp(15px,2vw,19px);line-height:1.65}
+  .lead b{color:var(--muted);font-weight:600}
+  .cta-row{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin-top:30px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;height:46px;padding:0 19px;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid transparent;transition:.18s ease}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 8px 28px rgba(94,106,210,.22)}
+  .btn-primary:hover{background:var(--primary2);transform:translateY(-1px)}
+  .btn-secondary{background:var(--surface1);border-color:var(--line2);color:var(--muted)}
+  .btn-secondary:hover{border-color:#5f636b;color:#fff}
+  .meta{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 16px;color:var(--tertiary);font-size:11px;margin-top:14px}
+  .meta span::before{content:"•";margin-right:7px;color:#3e4148}
+  .product-wrap{position:relative;margin:54px auto 0;max-width:1060px}
+  .browser{border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:var(--surface1);box-shadow:0 35px 100px rgba(0,0,0,.55),0 0 0 1px rgba(94,106,210,.08);transform:perspective(1400px) rotateX(1.2deg)}
+  .browser-bar{height:38px;background:#0b0c0d;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:7px;padding:0 13px}
+  .lights{display:flex;gap:6px}.lights i{display:block;width:8px;height:8px;border-radius:50%;background:#33363c}.lights i:first-child{background:#c66}.lights i:nth-child(2){background:#c9a44a}.lights i:nth-child(3){background:#4c9b65}
+  .addr{flex:1;max-width:380px;margin:0 auto;height:21px;border:1px solid var(--line);border-radius:5px;background:#111214;color:#666;font:10px var(--mono);display:flex;align-items:center;justify-content:center}
+  .browser img{display:block;width:100%;height:auto}
+  .logos{padding:34px 0 18px;border-top:1px solid rgba(35,37,42,.65);border-bottom:1px solid rgba(35,37,42,.65);background:#030304}
+  .logos-title{text-align:center;color:var(--tertiary);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px}
+  .logo-row{display:flex;justify-content:center;gap:clamp(18px,4vw,50px);flex-wrap:wrap;color:#777c86;font-weight:650;font-size:clamp(14px,2vw,18px);letter-spacing:-.02em}
+  .section{padding:88px 0}
+  .section-head{max-width:720px;margin-bottom:34px}.section-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .kicker{color:var(--primary2);font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px}
+  h2{font-size:clamp(28px,4vw,44px);line-height:1.12;letter-spacing:-.04em;font-weight:650}
+  .section-head p{color:var(--subtle);font-size:15px;line-height:1.65;margin-top:12px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .card{background:linear-gradient(180deg,var(--surface1),#0b0c0d);border:1px solid var(--line);border-radius:var(--radius);padding:22px;min-height:168px}
+  .card:hover{border-color:var(--line2);background:linear-gradient(180deg,#131416,#0d0e0f)}
+  .card .icon{width:34px;height:34px;border:1px solid var(--line2);border-radius:9px;display:grid;place-items:center;background:var(--surface3);margin-bottom:18px;color:var(--glow);font-size:16px}
+  .card h3{font-size:16px;letter-spacing:-.02em;margin-bottom:8px}.card p{font-size:13px;color:var(--subtle);line-height:1.65}
+  .split{display:grid;grid-template-columns:1.02fr .98fr;gap:42px;align-items:center}
+  .shot-card{border:1px solid var(--line2);border-radius:18px;background:var(--surface1);padding:10px;box-shadow:0 30px 70px rgba(0,0,0,.36)}
+  .shot-card img{display:block;width:100%;border-radius:11px;border:1px solid #26282d}
+  .steps{display:grid;gap:12px;margin-top:24px}.step{display:flex;gap:14px;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surface1)}
+  .num{width:27px;height:27px;border-radius:50%;background:rgba(94,106,210,.16);border:1px solid rgba(94,106,210,.38);color:#cbd0ff;font-size:12px;font-weight:800;display:grid;place-items:center;flex-shrink:0}
+  .step h3{font-size:14px;margin-bottom:4px}.step p{font-size:12px;color:var(--subtle);line-height:1.55}
+  .security{background:linear-gradient(180deg,#08090a,#050506);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .security-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}
+  .pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:10px;color:var(--subtle);background:var(--surface1)}
+  .pill.ok{color:#9cf0bb;border-color:rgba(39,166,68,.42);background:rgba(39,166,68,.08)}
+  .download-box{border:1px solid var(--line2);border-radius:20px;background:radial-gradient(600px 300px at 50% 0%,rgba(94,106,210,.16),transparent 70%),linear-gradient(180deg,#111214,#090a0b);padding:48px 28px;text-align:center}
+  .download-box h2{max-width:760px;margin:0 auto}.download-box p{max-width:620px;margin:14px auto 0;color:var(--subtle);font-size:14px;line-height:1.65}
+  .hash{margin-top:14px;word-break:break-all;color:var(--tertiary);font:10px/1.6 var(--mono)}
+  .faq{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:30px}
+  details{background:var(--surface1);border:1px solid var(--line);border-radius:12px;padding:16px 17px}summary{cursor:pointer;font-size:14px;font-weight:650}details p{font-size:12px;color:var(--subtle);line-height:1.65;margin-top:10px}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--tertiary);font-size:11px}.foot-inner{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}.foot-inner a{color:var(--subtle)}.foot-inner a:hover{color:#fff}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#f7f8f8;color:#08090a;border-radius:999px;padding:9px 15px;font-size:12px;font-weight:700;opacity:0;pointer-events:none;transition:.22s;z-index:50}.toast.show{opacity:1;transform:translate(-50%,0)}
+  @media(max-width:860px){.grid{grid-template-columns:1fr 1fr}.split{grid-template-columns:1fr}.security-grid{grid-template-columns:1fr}.faq{grid-template-columns:1fr}.navlinks a:not(.mini-btn){display:none}}
+  @media(max-width:560px){.navlinks{display:none}.wrap{width:min(100% - 26px,1160px)}.hero{padding-top:60px}.cta-row .btn{width:100%}.grid{grid-template-columns:1fr}.nav-inner{height:56px}.brand span{font-size:13px}.product-wrap{margin-top:38px}.section{padding:64px 0}.browser{border-radius:12px}.download-box{padding:36px 18px}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-8"/><path d="M17 6h4v4"/></svg></span><span>AI 成本管家</span></a>
+    <div class="navlinks"><a href="#features">功能</a><a href="#providers">支持 API</a><a href="#security">安全</a><a class="mini-btn" href="#download">下载 Windows 版</a></div>
+  </div>
+</nav>
+
+<main id="top">
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div class="eyebrow"><span class="dot"></span>v0.2.0 · 多 API 版本已发布</div>
+    <h1><span class="grad">每个 AI API 的钱，<br>一屏看清。</span></h1>
+    <p class="lead">把 <b>DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini</b> 和自定义接口的 Key 放进一个桌面看板。余额、额度、连接状态、费用趋势和异常提醒，全部在本机完成。</p>
+    <div class="cta-row"><a class="btn btn-primary" href="ai-cost-manager-v0.2.0.zip" download>↓ 下载 Windows 版</a><a class="btn btn-secondary" href="#features">看它能做什么</a></div>
+    <div class="meta"><span>Windows 10/11 64 位</span><span>单文件 EXE</span><span>无需安装 Python</span><span>21.7 MB</span></div>
+    <div class="product-wrap">
+      <div class="browser"><div class="browser-bar"><div class="lights"><i></i><i></i><i></i></div><div class="addr">127.0.0.1 · AI Cost Manager</div></div><img src="assets/dashboard.png" alt="AI 成本管家多 API 成本看板"></div>
+    </div>
+  </div>
+</section>
+
+<section class="logos" id="providers">
+  <div class="wrap"><div class="logos-title">One dashboard for your AI API stack</div><div class="logo-row"><span>DeepSeek</span><span>OpenRouter</span><span>OpenAI</span><span>Anthropic</span><span>Google Gemini</span><span>Custom API</span></div></div>
+</section>
+
+<section class="section" id="features">
+  <div class="wrap">
+    <div class="section-head center"><div class="kicker">What it does</div><h2>不是简单看个余额，<br>是把 AI 成本管起来。</h2><p>从 Key 管理到余额、费用和异常状态，信息都在一个界面里。</p></div>
+    <div class="grid">
+      <div class="card"><div class="icon">◎</div><h3>多 API Key 管理</h3><p>自动识别常见 Key 类型，也可以手动选择服务商、修改 Base URL，分别测试并保存。</p></div>
+      <div class="card"><div class="icon">↗</div><h3>余额与连接状态</h3><p>DeepSeek 和 OpenRouter 可直接查询余额；其他服务商显示真实连接与模型状态，不伪造余额。</p></div>
+      <div class="card"><div class="icon">⌁</div><h3>费用趋势</h3><p>今日、本月、累计费用，24 小时分时花费，近 7 天与近 30 天趋势一屏展开。</p></div>
+      <div class="card"><div class="icon">!</div><h3>异常与余额告警</h3><p>费用突然放大、余额可用天数过低、AI 在工作但用量数据断流，都能直接提示。</p></div>
+      <div class="card"><div class="icon">◫</div><h3>本地优先</h3><p>服务只监听 127.0.0.1，Key 和运行数据保存在本机，不走第三方云。</p></div>
+      <div class="card"><div class="icon">⚡</div><h3>无 Key 演示模式</h3><p>先看完整界面再决定是否接自己的 Key。演示数据全部合成，不读取真实用量。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap split">
+    <div class="section-head"><div class="kicker">Built for multi-AI workflows</div><h2>哪个 Key 能连、哪里在烧钱，<br>一眼就知道。</h2><p>你不需要在多个平台之间来回切换。进入 API 设置，添加你的 Key，回看板就能看到服务商状态和成本趋势。</p>
+      <div class="steps">
+        <div class="step"><span class="num">1</span><div><h3>下载并解压</h3><p>双击 AICostManager.exe，Windows 直接运行。</p></div></div>
+        <div class="step"><span class="num">2</span><div><h3>添加 API</h3><p>选择服务商、粘贴 Key、点测试连接，再保存。</p></div></div>
+        <div class="step"><span class="num">3</span><div><h3>打开看板</h3><p>余额、连接状态、成本趋势和告警自动刷新。</p></div></div>
+      </div>
+    </div>
+    <div class="shot-card"><img src="assets/settings.png" alt="API 服务商设置界面"></div>
+  </div>
+</section>
+
+<section class="section security" id="security">
+  <div class="wrap">
+    <div class="section-head center"><div class="kicker">Local-first by design</div><h2>你的 Key，只在你的电脑里。</h2><p>桌面应用只监听本机回环地址，不上传 Key，不依赖云端账号。</p></div>
+    <div class="security-grid">
+      <div class="card"><div class="icon">⌂</div><h3>127.0.0.1</h3><p>本地 HTTP 服务只绑定回环地址，外部网络无法访问。</p></div>
+      <div class="card"><div class="icon">◇</div><h3>Key 本地保存</h3><p>API Key 写入本机 config.json，分享文件夹前请勿把填过 Key 的配置发出去。</p></div>
+      <div class="card"><div class="icon">✓</div><h3>无静默上传</h3><p>程序只访问你配置的 API 官方接口；没有埋点、账号系统或第三方统计。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="download">
+  <div class="wrap">
+    <div class="download-box">
+      <div class="kicker">Windows 内测版</div><h2>下载 AI 成本管家 v0.2.0</h2><p>适合同时使用多个 AI API 的个人、工作室和跨境团队。单文件 EXE，不需要安装 Python。</p>
+      <div class="cta-row"><a class="btn btn-primary" href="ai-cost-manager-v0.2.0.zip" download>↓ 下载 Windows 版 · 21.7 MB</a><button class="btn btn-secondary" id="shareBtn">复制分享文案</button></div>
+      <div class="meta"><span>Windows 10/11 64 位</span><span>需要 WebView2 Runtime</span><span>v0.2.0</span><span>未签名内测版</span></div>
+      <div class="hash">SHA256 · EE65FA98AE8D2FF715C8959C8F0999D2A531A315517A158FCE4B234CC69DE2AF</div>
+    </div>
+    <div class="faq">
+      <details><summary>为什么有些 API 没有余额？</summary><p>OpenAI、Anthropic、Gemini 的普通 API Key 通常没有公开统一的余额端点，因此工具只显示连接和模型状态；DeepSeek、OpenRouter 可以显示额度信息。</p></details>
+      <details><summary>需要注册账号吗？</summary><p>不需要。数据只在本机处理，配置保存在程序目录的 config.json。</p></details>
+      <details><summary>第一次运行被 SmartScreen 拦住怎么办？</summary><p>这是未做商业代码签名的内测版本。请先在本地完成病毒/哈希核验，再决定是否继续运行。正式商业版应使用代码签名证书。</p></details>
+      <details><summary>可以自己加 Base URL 吗？</summary><p>可以。选择“自定义兼容 API”，填写兼容 OpenAI /models 的 Base URL 和 Key 即可测试连接。</p></details>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap foot-inner"><span>AI 成本管家 · Local-first AI cost control</span><span>v0.2.0 · Made for multi-API workflows</span></div></footer>
+<div class="toast" id="toast">已复制</div>
+<script>
+const shareText = `给你一个我做的 AI 成本管家：把 DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini 和自定义 API 的 Key 接进来，一屏看余额、费用、连接状态和异常。Windows 单文件 EXE，不用装 Python。下载：https://wkxrobin.github.io/aicost/`;
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(shareText); } catch (e) {
+    const ta=document.createElement('textarea'); ta.value=shareText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500);
+});
+</script>
+</body>
+</html>
