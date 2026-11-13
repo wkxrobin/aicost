@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="AI 成本管家：把 DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini 和自定义 API 的余额、费用与连接状态放在一个 Windows 桌面看板里。">
-<meta property="og:title" content="AI 成本管家 v0.2.0">
-<meta property="og:description" content="多 API 余额、费用和异常，一屏看清。Windows 单文件 EXE，无需安装 Python。">
+<meta property="og:title" content="AI 成本管家 v0.3.0">
+<meta property="og:description" content="多 API 余额、费用和异常，一屏看清。Windows 单文件 EXE，7 天免费试用，6.60 元单机买断。">
 <meta property="og:image" content="https://wkxrobin.github.io/aicost/assets/dashboard.png">
 <meta property="og:type" content="website">
 <title>AI 成本管家 · 多 API 成本看板</title>
@@ -93,17 +93,17 @@
 <nav class="nav">
   <div class="wrap nav-inner">
     <a class="brand" href="#top"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 3 5-8"/><path d="M17 6h4v4"/></svg></span><span>AI 成本管家</span></a>
-    <div class="navlinks"><a href="#features">功能</a><a href="#providers">支持 API</a><a href="#security">安全</a><a class="mini-btn" href="#download">下载 Windows 版</a></div>
+    <div class="navlinks"><a href="#features">功能</a><a href="#providers">支持 API</a><a href="#security">安全</a><a href="#pricing">价格</a><a class="mini-btn" href="#download">获取 Windows 版</a></div>
   </div>
 </nav>
 
 <main id="top">
 <section class="hero">
   <div class="wrap hero-inner">
-    <div class="eyebrow"><span class="dot"></span>v0.2.0 · 多 API 版本已发布</div>
+    <div class="eyebrow"><span class="dot"></span>v0.3.0 · 7 天免费试用</div>
     <h1><span class="grad">每个 AI API 的钱，<br>一屏看清。</span></h1>
     <p class="lead">把 <b>DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini</b> 和自定义接口的 Key 放进一个桌面看板。余额、额度、连接状态、费用趋势和异常提醒，全部在本机完成。</p>
-    <div class="cta-row"><a class="btn btn-primary" href="ai-cost-manager-v0.2.0.zip" download>↓ 下载 Windows 版</a><a class="btn btn-secondary" href="#features">看它能做什么</a></div>
+    <div class="cta-row"><a class="btn btn-primary" href="ai-cost-manager-v0.3.0.zip" download>↓ 下载 7 天试用版</a><a class="btn btn-secondary" href="#pricing">查看价格与激活</a></div>
     <div class="meta"><span>Windows 10/11 64 位</span><span>单文件 EXE</span><span>无需安装 Python</span><span>21.7 MB</span></div>
     <div class="product-wrap">
       <div class="browser"><div class="browser-bar"><div class="lights"><i></i><i></i><i></i></div><div class="addr">127.0.0.1 · AI Cost Manager</div></div><img src="assets/dashboard.png" alt="AI 成本管家多 API 成本看板"></div>
@@ -133,7 +133,7 @@
   <div class="wrap split">
     <div class="section-head"><div class="kicker">Built for multi-AI workflows</div><h2>哪个 Key 能连、哪里在烧钱，<br>一眼就知道。</h2><p>你不需要在多个平台之间来回切换。进入 API 设置，添加你的 Key，回看板就能看到服务商状态和成本趋势。</p>
       <div class="steps">
-        <div class="step"><span class="num">1</span><div><h3>下载并解压</h3><p>双击 AICostManager.exe，Windows 直接运行。</p></div></div>
+        <div class="step"><span class="num">1</span><div><h3>下载并解压</h3><p>双击 AICostManager.exe，先免费试用 7 天。</p></div></div>
         <div class="step"><span class="num">2</span><div><h3>添加 API</h3><p>选择服务商、粘贴 Key、点测试连接，再保存。</p></div></div>
         <div class="step"><span class="num">3</span><div><h3>打开看板</h3><p>余额、连接状态、成本趋势和告警自动刷新。</p></div></div>
       </div>
@@ -153,28 +153,43 @@
   </div>
 </section>
 
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="section-head center"><div class="kicker">Simple pricing</div><h2>6.60 元，买断这台电脑。</h2><p>先试用 7 天，确认能帮你看清成本后再付款。没有订阅，没有自动续费。</p></div>
+    <div class="download-box" style="max-width:760px;margin:0 auto;border-color:#3a486a;background:linear-gradient(145deg,#111522,#0c1019)">
+      <div style="display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap;text-align:left">
+        <div><div class="kicker">单机买断 · 永久使用</div><div style="font-size:52px;font-weight:800;letter-spacing:-.06em;margin:9px 0 4px">¥6.60</div><div style="color:var(--subtle);font-size:13px">一个机器码对应一份许可证</div></div>
+        <div style="background:#171d2d;border:1px solid #2b3652;border-radius:12px;padding:16px 18px;min-width:260px"><div style="font-size:11px;color:var(--tertiary);margin-bottom:5px">支付宝收款账户</div><div style="font:800 20px/1.4 var(--mono);color:#ffd27a;letter-spacing:.02em">16607693636</div></div>
+      </div>
+      <div style="text-align:left;color:var(--muted);font-size:13px;line-height:1.9;margin-top:20px">
+        支付宝转账 6.60 元，备注中填写软件显示的机器码。付款后把机器码和订单号发送给卖家，收到 license.key 内容后在软件的激活页粘贴即可。
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section" id="download">
   <div class="wrap">
     <div class="download-box">
-      <div class="kicker">Windows 内测版</div><h2>下载 AI 成本管家 v0.2.0</h2><p>适合同时使用多个 AI API 的个人、工作室和跨境团队。单文件 EXE，不需要安装 Python。</p>
-      <div class="cta-row"><a class="btn btn-primary" href="ai-cost-manager-v0.2.0.zip" download>↓ 下载 Windows 版 · 21.7 MB</a><button class="btn btn-secondary" id="shareBtn">复制分享文案</button></div>
-      <div class="meta"><span>Windows 10/11 64 位</span><span>需要 WebView2 Runtime</span><span>v0.2.0</span><span>未签名内测版</span></div>
-      <div class="hash">SHA256 · EE65FA98AE8D2FF715C8959C8F0999D2A531A315517A158FCE4B234CC69DE2AF</div>
+      <div class="kicker">Windows 试用版</div><h2>下载 AI 成本管家 v0.3.0</h2><p>7 天免费试用，之后 6.60 元单机买断。适合同时使用多个 AI API 的个人、工作室和跨境团队，单文件 EXE，不需要安装 Python。</p>
+      <div class="cta-row"><a class="btn btn-primary" href="ai-cost-manager-v0.3.0.zip" download>↓ 下载 7 天试用版</a><a class="btn btn-secondary" href="#pricing">购买与激活说明</a><button class="btn btn-secondary" id="shareBtn">复制分享文案</button></div>
+      <div class="meta"><span>Windows 10/11 64 位</span><span>需要 WebView2 Runtime</span><span>v0.3.0</span><span>7 天试用</span></div>
+      <div class="hash">SHA256 · E6759DBBE3E3531BD8CF10FAB1FE8F178FA437DBACFD65A55BE126ADC7A104FD</div>
     </div>
     <div class="faq">
       <details><summary>为什么有些 API 没有余额？</summary><p>OpenAI、Anthropic、Gemini 的普通 API Key 通常没有公开统一的余额端点，因此工具只显示连接和模型状态；DeepSeek、OpenRouter 可以显示额度信息。</p></details>
-      <details><summary>需要注册账号吗？</summary><p>不需要。数据只在本机处理，配置保存在程序目录的 config.json。</p></details>
-      <details><summary>第一次运行被 SmartScreen 拦住怎么办？</summary><p>这是未做商业代码签名的内测版本。请先在本地完成病毒/哈希核验，再决定是否继续运行。正式商业版应使用代码签名证书。</p></details>
+      <details><summary>需要注册账号吗？</summary><p>不需要。数据只在本机处理，配置保存在程序目录的 config.json；许可证离线验证，不上传机器信息。</p></details>
+      <details><summary>为什么第一次运行被 SmartScreen 拦住？</summary><p>当前 EXE 尚未做商业代码签名，首次运行可能出现提示。请先核对下载页公布的 SHA256，再决定是否继续运行。</p></details>
       <details><summary>可以自己加 Base URL 吗？</summary><p>可以。选择“自定义兼容 API”，填写兼容 OpenAI /models 的 Base URL 和 Key 即可测试连接。</p></details>
     </div>
   </div>
 </section>
 </main>
 
-<footer><div class="wrap foot-inner"><span>AI 成本管家 · Local-first AI cost control</span><span>v0.2.0 · Made for multi-API workflows</span></div></footer>
+<footer><div class="wrap foot-inner"><span>AI 成本管家 · Local-first AI cost control</span><span>v0.3.0 · 7 天试用 / 6.60 元买断</span></div></footer>
 <div class="toast" id="toast">已复制</div>
 <script>
-const shareText = `给你一个我做的 AI 成本管家：把 DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini 和自定义 API 的 Key 接进来，一屏看余额、费用、连接状态和异常。Windows 单文件 EXE，不用装 Python。下载：https://wkxrobin.github.io/aicost/`;
+const shareText = `AI 成本管家 v0.3.0：Windows 本地 AI 用量与成本看板，支持 DeepSeek、OpenRouter、OpenAI、Anthropic、Gemini 和自定义 API。7 天免费试用，之后 6.60 元单机买断。支付宝：16607693636。下载与激活：https://wkxrobin.github.io/aicost/`;
 document.getElementById('shareBtn').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(shareText); } catch (e) {
     const ta=document.createElement('textarea'); ta.value=shareText; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
